@@ -1,30 +1,57 @@
-#include <string>
 #include <iostream>
-#include <irrKlang.h>
+#include "sound.h"
+#include "gui.h"
+#include "globals.h"
+#include <filesystem>
+#include <vector>
 
 using namespace std;
-using namespace irrklang;
+namespace fs = std::filesystem;
 
-int main()
+string filePath = "./musics/";
+vector<fs::path> filePaths;
+int songIndex = 0;
+
+int main() 
 {
-    const string musicName = "musics/loser_baby.wav";
-    cout << "Test compiling and running !" << endl;
-
-    ISoundEngine* engine = createIrrKlangDevice();
-
-    if (!engine) {
-        cerr << "Could not start sound engine" << endl;
-        return 1;
+  try 
+  {
+    for (const auto& entry : fs::directory_iterator(filePath)) 
+    {
+      filePaths.push_back(entry.path());
+      std::cout << entry.path();
     }
+  }
+  catch (const std::exception&) 
+  {
+    return 1;
+  }
 
-    engine->play2D(musicName.c_str(), true);
+  if (filePaths.empty())
+  {
+    cerr << "No musics files found.";
+    return 1;
+  } 
 
-    cout << "Press Enter to exit..." << endl;
-    cin.get();
+  if (!initSoundEngine()) 
+  {
+    cerr << "Failed to initialize sound engine" << endl;
+    return 1;
+  }
 
-    engine->drop();
-    return 0;
+  if (!playMusic()) 
+  {
+    cerr << "Failed to play music" << endl;
+    cleanupSoundEngine();
+    return 1;
+  }
+
+  displayWindow();
+
+  runFLTK();
+
+  cleanupSoundEngine();
+
+  return 0;
 }
 
-//compiller build
-//++ -o playmp3 main.cpp -I/usr/local/lib/irrKlang/include -L/usr/local/lib -lIrrKlang -pthread
