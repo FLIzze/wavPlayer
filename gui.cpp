@@ -5,6 +5,7 @@
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Timer.H> 
+#include <FL/Fl_Value_Slider.H>
 
 #include "globals.h"
 #include "sound.h"
@@ -17,6 +18,7 @@ Fl_Button* previousButton;
 Fl_Box* box;
 Fl_Box* imageBox;
 Fl_Output* duration;
+Fl_Value_Slider* volumeSlider;
 
 const char* returnFormattedSongName()
 {
@@ -38,6 +40,12 @@ void pauseCallback(Fl_Widget*, void*)
 void resumeCallback(Fl_Widget*, void*) 
 {
   resumeMusic();
+}
+
+void volumeSliderCallback(Fl_Widget* widget, void*)
+{
+  Fl_Value_Slider* slider = (Fl_Value_Slider*)widget;
+  double value = slider->value();
 }
 
 void nextSongCallback(Fl_Widget*, void*)
@@ -101,6 +109,12 @@ void displayWindow()
 
   duration = new Fl_Output(0, 80, 250, 30, "Sound Duration:");
   duration->value((std::to_string(getCurrentSoundDuration()) + " / " + std::to_string(getSoundDuration())).c_str());
+
+  volumeSlider = new Fl_Value_Slider(200, 300, 120, 30, "Volume");
+  volumeSlider->range(0, 100);
+  volumeSlider->value(100);
+  volumeSlider->step(1);
+  volumeSlider->callback(volumeSliderCallback);
 
   Fl::add_timeout(1.0, timerCallback, duration); 
 

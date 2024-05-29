@@ -11,6 +11,7 @@ void resumeMusic();
 void cleanupSoundEngine();
 int getSoundDuration();
 int getCurrentSoundDuration();
+void setVolume(int newVolume);
 
 #endif
 

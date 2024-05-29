@@ -59,3 +59,9 @@ int getCurrentSoundDuration()
     return sound->getPlayPosition() / 1000;
   return -1;
 }
+
+void setVolume(int newVolume)
+{
+  std::cout << "Setting volume." << std::endl;
+  sound->setVolume(newVolume / 100);
+}
