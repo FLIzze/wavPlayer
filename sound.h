@@ -9,9 +9,10 @@ bool playMusic();
 void pauseMusic();
 void resumeMusic();
 void cleanupSoundEngine();
-int getSoundDuration();
-int getCurrentSoundDuration();
-void setVolume(int newVolume);
+double getSoundDuration();
+double getCurrentSoundDuration();
+void setVolume(float newVolume);
+void setSoundDuration(float newSoundDuration);
 
 #endif
 

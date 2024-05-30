@@ -7,6 +7,8 @@ using namespace irrklang;
 ISoundEngine* engine = nullptr;
 ISound* sound = nullptr;
 
+float previousVolumeSound = 1.0f;
+
 bool initSoundEngine() 
 {
   engine = createIrrKlangDevice();
@@ -17,11 +19,18 @@ bool playMusic()
 {
   if (engine) 
   {
+    if (sound) 
+    {
+      previousVolumeSound = sound->getVolume();
+    }
+
     cleanupSoundEngine();
     initSoundEngine();
     sound = engine->play2D(filePaths[songIndex].c_str(), false, true, true);
     sound->setIsPaused(false);
-    return sound != nullptr;
+    sound->setVolume(previousVolumeSound);
+
+    return true;
   }
   return false;
 }
@@ -46,22 +55,26 @@ void cleanupSoundEngine()
     engine->drop();
 }
 
-int getSoundDuration()
+double getSoundDuration()
 {
   if (sound)
     return sound->getPlayLength() / 1000;
   return -1;
 }
 
-int getCurrentSoundDuration()
+double getCurrentSoundDuration()
 {
   if (sound)
     return sound->getPlayPosition() / 1000;
   return -1;
 }
 
-void setVolume(int newVolume)
+void setVolume(float newVolume)
 {
-  std::cout << "Setting volume." << std::endl;
-  sound->setVolume(newVolume / 100);
+  sound->setVolume(newVolume);
+}
+
+void setSoundDuration(float newSoundDuration)
+{
+  sound->setPlayPosition(newSoundDuration * 1000);
 }

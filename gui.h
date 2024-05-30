@@ -7,7 +7,7 @@ void previousSong();
 void nextSong();
 void updateBox();
 void updateDuration();
-char returnFormattedSongName();
+char* returnFormattedSongName();
 void nextSongCallback();
 void previousSongCallback();
 void timerCallback();

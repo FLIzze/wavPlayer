@@ -17,13 +17,25 @@ Fl_Button* nextButton;
 Fl_Button* previousButton;
 Fl_Box* box;
 Fl_Box* imageBox;
-Fl_Output* duration;
+Fl_Value_Slider* duration;
 Fl_Value_Slider* volumeSlider;
 
 const char* returnFormattedSongName()
 {
   const char* songName = filePaths[songIndex].c_str();
   return songName;
+}
+
+void songsInputCallback(Fl_Widget* widget, void*)
+{
+  for (int i = 0; i < filePaths.size(); i ++)
+  {
+    if (widget->label() == filePaths[i])
+    {
+      songIndex = i;
+    }
+  }
+  playMusic();
 }
 
 void updateBox()
@@ -45,7 +57,30 @@ void resumeCallback(Fl_Widget*, void*)
 void volumeSliderCallback(Fl_Widget* widget, void*)
 {
   Fl_Value_Slider* slider = (Fl_Value_Slider*)widget;
-  double value = slider->value();
+  slider->value(slider->value());
+  setVolume(slider->value() / 100); 
+}
+
+void durationSliderCallback(Fl_Widget* widget)
+{
+  Fl_Value_Slider* duration = (Fl_Value_Slider*)widget;
+  duration->value(getCurrentSoundDuration());
+  window->redraw();
+}
+
+void setDurationCallback(Fl_Widget* widget)
+{
+  Fl_Value_Slider* duration = (Fl_Value_Slider*)widget;
+  duration->range(0, getSoundDuration());
+ setSoundDuration(duration->value());
+ window->redraw();
+}
+
+void timerCallback(void* data) 
+{
+  Fl_Widget* widget = static_cast<Fl_Widget*>(data);
+  durationSliderCallback(widget);
+  Fl::repeat_timeout(1.0, timerCallback, data); 
 }
 
 void nextSongCallback(Fl_Widget*, void*)
@@ -75,19 +110,6 @@ void previousSongCallback(Fl_Widget*, void*)
   }
 }
 
-void updateDuration(Fl_Widget* widget) 
-{
-  duration->value((std::to_string(getCurrentSoundDuration()) + " / " + std::to_string(getSoundDuration())).c_str());
-  window->redraw();
-}
-
-void timerCallback(void* data) 
-{
-  Fl_Widget* widget = static_cast<Fl_Widget*>(data);
-  updateDuration(widget);
-  Fl::repeat_timeout(1.0, timerCallback, data); 
-}
-
 void displayWindow() 
 {
   window = new Fl_Window(700, 500, "Music Player");
@@ -99,18 +121,29 @@ void displayWindow()
   pauseButton = new Fl_Button(130, 0, 120, 30, "Pause");
   pauseButton->callback(pauseCallback);
 
-  previousButton = new Fl_Button(0, 120, 100, 30, "Previous");
+  previousButton = new Fl_Button(0, 150, 100, 30, "Previous");
   previousButton->callback(previousSongCallback);
 
-  nextButton = new Fl_Button(130, 120, 100, 30, "Next");
+  nextButton = new Fl_Button(130, 150, 100, 30, "Next");
   nextButton->callback(nextSongCallback);
 
   box = new Fl_Box(0, 40, 500, 30, returnFormattedSongName());
 
-  duration = new Fl_Output(0, 80, 250, 30, "Sound Duration:");
-  duration->value((std::to_string(getCurrentSoundDuration()) + " / " + std::to_string(getSoundDuration())).c_str());
+  for (int i = 0; i < filePaths.size(); i++)
+  {
+    Fl_Button* song = new Fl_Button(0, (200+(i+30)*i), 700, 30, filePaths[i].c_str());
+    song->callback(songsInputCallback);
+  }
 
-  volumeSlider = new Fl_Value_Slider(200, 300, 120, 30, "Volume");
+  duration = new Fl_Value_Slider(0, 80, 400, 30, "Sound Duration:");
+  duration->type(FL_HOR_SLIDER);
+  duration->step(1);
+  duration->value(0);
+  duration->range(0, getSoundDuration());
+  duration->callback(setDurationCallback);
+
+  volumeSlider = new Fl_Value_Slider(200, 340, 400, 30, "Volume");
+  volumeSlider->type(FL_HOR_SLIDER);
   volumeSlider->range(0, 100);
   volumeSlider->value(100);
   volumeSlider->step(1);
@@ -125,4 +158,3 @@ void displayWindow()
 void runFLTK() {
   Fl::run();
 }
-
