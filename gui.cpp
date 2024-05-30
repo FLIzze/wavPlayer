@@ -26,6 +26,12 @@ const char* returnFormattedSongName()
   return songName;
 }
 
+void updateBox()
+{
+  box->label(returnFormattedSongName());
+  window->redraw();
+}
+
 void songsInputCallback(Fl_Widget* widget, void*)
 {
   for (int i = 0; i < filePaths.size(); i ++)
@@ -33,15 +39,10 @@ void songsInputCallback(Fl_Widget* widget, void*)
     if (widget->label() == filePaths[i])
     {
       songIndex = i;
+      updateBox();
     }
   }
   playMusic();
-}
-
-void updateBox()
-{
-  box->label(returnFormattedSongName());
-  window->redraw();
 }
 
 void pauseCallback(Fl_Widget*, void*) 
@@ -142,7 +143,7 @@ void displayWindow()
   duration->range(0, getSoundDuration());
   duration->callback(setDurationCallback);
 
-  volumeSlider = new Fl_Value_Slider(200, 340, 400, 30, "Volume");
+  volumeSlider = new Fl_Value_Slider(300, 150, 400, 30, "Volume");
   volumeSlider->type(FL_HOR_SLIDER);
   volumeSlider->range(0, 100);
   volumeSlider->value(100);
