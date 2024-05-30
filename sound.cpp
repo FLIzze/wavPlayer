@@ -1,6 +1,7 @@
 #include "sound.h"
 #include "globals.h"
 #include <iostream>
+#include "gui.h"
 
 using namespace irrklang;
 
@@ -13,6 +14,32 @@ bool initSoundEngine()
 {
   engine = createIrrKlangDevice();
   return engine != nullptr;
+}
+
+void playNextSong()
+{
+  if (songIndex + 1 < filePaths.size()) 
+  {
+    songIndex += 1;
+    playMusic();
+    updateBox();
+  } else 
+  {
+    std::cerr << "There is no next song end of index." << std::endl;
+  }
+}
+
+void playPreviousSong()
+{
+  if (songIndex > 0)
+  {
+    songIndex -= 1;
+    playMusic();
+    updateBox();
+  } else 
+  {
+    std::cerr << "There is no previous song, start of index." << std::endl;
+  }
 }
 
 bool playMusic() 

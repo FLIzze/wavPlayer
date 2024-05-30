@@ -73,42 +73,29 @@ void setDurationCallback(Fl_Widget* widget)
 {
   Fl_Value_Slider* duration = (Fl_Value_Slider*)widget;
   duration->range(0, getSoundDuration());
- setSoundDuration(duration->value());
- window->redraw();
+  setSoundDuration(duration->value());
+  window->redraw();
 }
 
 void timerCallback(void* data) 
 {
   Fl_Widget* widget = static_cast<Fl_Widget*>(data);
   durationSliderCallback(widget);
+  if (getCurrentSoundDuration() >= getSoundDuration())
+  {
+    playNextSong();
+  }
   Fl::repeat_timeout(1.0, timerCallback, data); 
 }
 
 void nextSongCallback(Fl_Widget*, void*)
 {
-  if (songIndex + 1 < filePaths.size()) 
-  {
-    songIndex += 1;
-    playMusic();
-    updateBox();
-  } else 
-  {
-    std::cerr << "There is no next song end of index." << std::endl;
-  }
+  playNextSong();
 }
 
 void previousSongCallback(Fl_Widget*, void*)
 {
-  if (songIndex > 0)
-  {
-    songIndex -= 1;
-    playMusic();
-    updateBox();
-
-  } else 
-  {
-    std::cerr << "There is no previous song, start of index." << std::endl;
-  }
+  playPreviousSong();
 }
 
 void displayWindow() 

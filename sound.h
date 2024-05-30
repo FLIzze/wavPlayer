@@ -13,6 +13,9 @@ double getSoundDuration();
 double getCurrentSoundDuration();
 void setVolume(float newVolume);
 void setSoundDuration(float newSoundDuration);
+void playNextSong();
+void playPreviousSong();
+void songEndCallback();
 
 #endif
 
