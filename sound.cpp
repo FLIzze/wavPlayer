@@ -2,19 +2,10 @@
 #include "globals.h"
 #include <iostream>
 #include "gui.h"
-
-using namespace irrklang;
-
-ISoundEngine* engine = nullptr;
-ISound* sound = nullptr;
+#include <SFML/Audio.hpp>
 
 float previousVolumeSound = 1.0f;
-
-bool initSoundEngine() 
-{
-  engine = createIrrKlangDevice();
-  return engine != nullptr;
-}
+sf::Music sound;
 
 void playNextSong()
 {
@@ -44,19 +35,9 @@ void playPreviousSong()
 
 bool playMusic() 
 {
-  if (engine) 
+  if (sound.openFromFile(filePaths[songIndex]))
   {
-    if (sound) 
-    {
-      previousVolumeSound = sound->getVolume();
-    }
-
-    cleanupSoundEngine();
-    initSoundEngine();
-    sound = engine->play2D(filePaths[songIndex].c_str(), false, true, true);
-    sound->setIsPaused(false);
-    sound->setVolume(previousVolumeSound);
-
+    sound.play();
     return true;
   }
   return false;
@@ -64,44 +45,33 @@ bool playMusic()
 
 void pauseMusic() 
 {
-  if (sound)
-    sound->setIsPaused(true);
+  sound.pause();
 }
 
 void resumeMusic() 
 {
-  if (sound)
-    sound->setIsPaused(false);
-}
-
-void cleanupSoundEngine() 
-{
-  if (sound)
-    sound->drop();
-  if (engine)
-    engine->drop();
+  sound.play();
 }
 
 double getSoundDuration()
 {
-  if (sound)
-    return sound->getPlayLength() / 1000;
-  return -1;
+  sf::Time duration = sound.getDuration();
+  return duration.asSeconds();
 }
 
 double getCurrentSoundDuration()
 {
-  if (sound)
-    return sound->getPlayPosition() / 1000;
-  return -1;
+  sf::Time offset = sound.getPlayingOffset();
+  return offset.asSeconds();
 }
 
 void setVolume(float newVolume)
 {
-  sound->setVolume(newVolume);
+  sound.setVolume(newVolume);
 }
 
 void setSoundDuration(float newSoundDuration)
 {
-  sound->setPlayPosition(newSoundDuration * 1000);
+  sf::Time timeOffset = sf::seconds(newSoundDuration);
+  sound.setPlayingOffset(timeOffset);
 }

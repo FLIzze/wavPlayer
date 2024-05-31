@@ -7,11 +7,11 @@ void previousSong();
 void nextSong();
 void updateBox();
 void updateDuration();
-char* returnFormattedSongName();
 void nextSongCallback();
 void previousSongCallback();
 void timerCallback();
 void volumeSliderCallback(); 
+const char* getMetaDataTitle();
 
 #endif // GUI_r
 

@@ -3,10 +3,13 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <filesystem>
 
-extern std::vector<std::filesystem::path> filePaths;
+using namespace std;
+
+extern vector<filesystem::path> filePaths;
 extern int songIndex;
+extern vector<map<string, string>> metaDatas;
 
 #endif 
-

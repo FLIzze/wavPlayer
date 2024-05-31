@@ -1,25 +1,22 @@
 #include <iostream>
+#include <vector>
+
 #include "sound.h"
 #include "gui.h"
-#include "globals.h"
 #include <filesystem>
-#include <vector>
+#include "metadata.h"
+#include "globals.h"
 
 using namespace std;
 namespace fs = std::filesystem;
-
-string filePath = "./musics/";
-vector<fs::path> filePaths;
-int songIndex = 0;
 
 int main() 
 {
   try 
   {
-    for (const auto& entry : fs::directory_iterator(filePath)) 
+    for (const auto& entry : fs::directory_iterator("./musics/")) 
     {
       filePaths.push_back(entry.path());
-      std::cout << entry.path();
     }
   }
   catch (const std::exception&) 
@@ -33,24 +30,17 @@ int main()
     return 1;
   } 
 
-  if (!initSoundEngine()) 
-  {
-    cerr << "Failed to initialize sound engine" << endl;
-    return 1;
-  }
-
   if (!playMusic()) 
   {
     cerr << "Failed to play music" << endl;
-    cleanupSoundEngine();
     return 1;
   }
+
+  getMetaData();
 
   displayWindow();
 
   runFLTK();
-
-  cleanupSoundEngine();
 
   return 0;
 }
