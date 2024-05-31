@@ -6,6 +6,7 @@
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Timer.H> 
 #include <FL/Fl_Value_Slider.H>
+#include <FL/Fl_PNG_Image.H>
 
 #include "globals.h"
 #include "sound.h"
@@ -26,6 +27,8 @@ Fl_Box* titleBox;
 Fl_Box* imageBox;
 Fl_Value_Slider* duration;
 Fl_Value_Slider* volumeSlider;
+Fl_PNG_Image pause("./assets/pause.png");
+Fl_PNG_Image resume("./assets/play.png");
 
 string title;
 string artist;
@@ -125,13 +128,19 @@ void previousSongCallback(Fl_Widget*, void*)
 
 void displayWindow() 
 {
-  window = new Fl_Window(700, 500, "Music Player");
+  int windowHeight = 500;
+  int windowWidth = 700;
+
+  window = new Fl_Window(windowWidth, windowHeight, "Music Player");
+  window->color(FL_WHITE);
   window->begin();
 
-  playButton = new Fl_Button(0, 0, 120, 30, "Play");
+  playButton = new Fl_Button(0, 450, 30, 30);
+  playButton->image(pause);
   playButton->callback(resumeCallback);
 
-  pauseButton = new Fl_Button(130, 0, 120, 30, "Pause");
+  pauseButton = new Fl_Button(130, 450, 30, 30);
+  pauseButton->image(resume);
   pauseButton->callback(pauseCallback);
 
   previousButton = new Fl_Button(0, 150, 100, 30, "Previous");
@@ -146,8 +155,11 @@ void displayWindow()
     song->callback(songsInputCallback);
   }
 
-  titleBox = new Fl_Box(0, 40, 500, 30, "title");
-  artistBox = new Fl_Box(0, 60, 500, 30, "artist");
+  titleBox = new Fl_Box(0, 20, windowWidth, 30, "title");
+  titleBox->labelsize(21);
+
+  artistBox = new Fl_Box(0, 40, windowWidth, 30, "artist");
+  Fl::add_timeout(0.02, updateArtistPosition, NULL);
 
   updateBox();
 
