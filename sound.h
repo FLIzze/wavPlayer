@@ -13,6 +13,7 @@ void setSoundDuration(float newSoundDuration);
 void playNextSong();
 void playPreviousSong();
 void songEndCallback();
+void mute();
 
 #endif
 

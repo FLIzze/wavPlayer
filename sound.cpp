@@ -3,6 +3,8 @@
 #include <iostream>
 #include "gui.h"
 #include <SFML/Audio.hpp>
+#include <cstdlib>
+#include <ctime>
 
 float previousVolumeSound = 1.0f;
 sf::Music sound;
@@ -18,6 +20,11 @@ void playNextSong()
   {
     std::cerr << "There is no next song end of index." << std::endl;
   }
+}
+
+void mute()
+{
+  sound.setVolume(0);
 }
 
 void playPreviousSong()
