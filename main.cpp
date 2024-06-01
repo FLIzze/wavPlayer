@@ -12,15 +12,18 @@ namespace fs = std::filesystem;
 
 int main() 
 {
+  std::cout << "Starting..." << endl;
+
   try 
   {
-    for (const auto& entry : fs::directory_iterator("./musics/")) 
+    for (const auto& entry : fs::directory_iterator("/home/abel/Music/musics/")) 
     {
       filePaths.push_back(entry.path());
     }
   }
   catch (const std::exception&) 
   {
+    cerr << "Failed to find music";
     return 1;
   }
 

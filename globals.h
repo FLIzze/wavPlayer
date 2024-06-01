@@ -11,5 +11,6 @@ using namespace std;
 extern vector<filesystem::path> filePaths;
 extern int songIndex;
 extern vector<map<string, string>> metaDatas;
+extern bool isPause;
 
 #endif 

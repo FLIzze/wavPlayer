@@ -29,6 +29,7 @@ Fl_Box* artistBox;
 Fl_Box* titleBox;
 Fl_Box* lyricsBox;
 Fl_Box* coverImage;
+Fl_Box* currentDurationBox;
 Fl_Slider* duration;
 Fl_Slider* volumeSlider;
 Fl_Button* muteButton;
@@ -44,7 +45,7 @@ Fl_Scroll* songListScroll;
 string title;
 string artist;
 string lyrics;
-bool isPause = false;
+string currentDurationString;
 
 void updateBox() {
     if (!metaDatas.empty() && songIndex >= 0 && songIndex < metaDatas.size()) {
@@ -61,10 +62,22 @@ void updateBox() {
         artistBox->label(artist.c_str());
         titleBox->label(title.c_str());
         lyricsBox->label(lyrics.c_str());
-
-        window->redraw();
     } else {
         std::cerr << "Error: metaDatas is empty or songIndex is out of bounds" << std::endl;
+    }
+
+    duration->value(getCurrentSoundDuration());
+    window->redraw();
+
+    int currentDuration = getCurrentSoundDuration();
+    int totalDuration = getSoundDuration();
+
+    currentDurationString = to_string(currentDuration) + " / " + to_string(totalDuration);
+
+    currentDurationBox->label(currentDurationString.c_str());
+
+    if (currentDuration + 1 >= totalDuration) {
+        playNextSong();
     }
 }
 
@@ -97,16 +110,14 @@ void songsInputCallback(Fl_Widget* widget, void*) {
 }
 
 void resumeCallback(Fl_Widget* widget, void*) {
-    if (!isPause) {
-        //widget->image(resumeIcon);
-        widget->label("resume");
-        pauseMusic();
-    } else {
-        //widget->image(pauseIcon);
-        widget->label("play");
+    if (isPause) {
+        widget->label("pause");
         resumeMusic();
+    } else {
+        widget->label("play");
+        pauseMusic();
     }
-    isPause = !isPause;
+    std::cout << "resumeCallback" << endl;
 }
 
 void volumeSliderCallback(Fl_Widget* widget, void*) {
@@ -129,25 +140,21 @@ void setDurationCallback(Fl_Widget* widget) {
 }
 
 void timerCallback(void* data) {
+    std::cout << "timerCallback call" << endl;
+
     Fl_Widget* widget = static_cast<Fl_Widget*>(data);
-    durationSliderCallback(widget);
 
-    std::cout << "callback" << endl;
-    std::cout << getCurrentSoundDuration() << getSoundDuration() << endl;
-
-    if (getCurrentSoundDuration() >= getSoundDuration()) {
-        playNextSong();
-    }
+    updateBox();
 
     Fl::repeat_timeout(1.0, timerCallback, data);
 }
 
 void nextSongCallback(Fl_Widget*, void*) {
-    playNextSong();
+  playNextSong();
 }
 
 void previousSongCallback(Fl_Widget*, void*) {
-    playPreviousSong();
+  playPreviousSong();
 }
 
 void displayWindow() {
@@ -158,7 +165,7 @@ void displayWindow() {
     window->color(FL_WHITE);
     window->begin();
 
-    playButton = new Fl_Button(50, 150, windowWidth, 50, "pause");
+    playButton = new Fl_Button(50, 150, windowWidth, 50, "play");
     playButton->callback(resumeCallback);
     playButton->labelsize(30);
     playButton->box(FL_NO_BOX);
@@ -187,6 +194,8 @@ void displayWindow() {
     duration->range(0, getSoundDuration());
     duration->callback(setDurationCallback);
 
+    currentDurationBox = new Fl_Box(30, 130, 30, 30, "duration");
+
     volumeSlider = new Fl_Slider(0, windowHeight-30, windowWidth, 30);
     volumeSlider->type(FL_HOR_SLIDER);
     volumeSlider->range(0, 100);
@@ -196,7 +205,7 @@ void displayWindow() {
 
     lyricsScroll = new Fl_Scroll(0, 210, windowWidth / 2, windowHeight-270);
     lyricsScroll->box(FL_DOWN_BOX);
-    lyricsBox = new Fl_Box(0, 0, windowWidth / 2 - 20, 0, "");
+    lyricsBox = new Fl_Box(0, 0, 0, 0, "");
     lyricsBox->box(FL_NO_BOX);
     lyricsScroll->end();
 

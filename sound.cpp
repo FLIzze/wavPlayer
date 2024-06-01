@@ -31,7 +31,10 @@ void playPreviousSong()
 {
   if (songIndex > 0)
   {
-    songIndex -= 1;
+    if (getCurrentSoundDuration() < 10)
+    {
+      songIndex -= 1;
+    }
     playMusic();
     updateBox();
   } else 
@@ -44,7 +47,10 @@ bool playMusic()
 {
   if (sound.openFromFile(filePaths[songIndex]))
   {
-    sound.play();
+    if (!isPause)
+    {
+      sound.play();
+    }
     return true;
   }
   return false;
@@ -53,11 +59,13 @@ bool playMusic()
 void pauseMusic() 
 {
   sound.pause();
+  isPause = true;
 }
 
 void resumeMusic() 
 {
   sound.play();
+  isPause = false;
 }
 
 double getSoundDuration()
